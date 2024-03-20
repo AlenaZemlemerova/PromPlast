@@ -1,0 +1,24 @@
+.header-navbar {
+  flex-grow: 0;
+}
+
+.header-text {
+  margin: 0 auto;
+  margin-right: 10px;
+}
+
+.about-company {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 80px;
+  max-width: 1200px;
+}
+.about-company__title {
+  text-align: center;
+  margin-top: 30px;
+  margin-bottom: 20px;
+}
+.about-company__p {
+  max-width: 500px;
+}/*# sourceMappingURL=style.css.map */
