@@ -1,51 +1,68 @@
 <?php
-    use PHPMailer\PHPMailer\PHPMailer;
-    use PHPMailer\PHPMailer\Exception;
+    // Подключение библиотеки
+    require 'phpmailer/PHPMailer.php';
+    require 'phpmailer/SMTP.php';
+    require 'phpmailer/Exception.php';
 
-    require 'phpmailer/src/Exception.php';
-    require 'phpmailer/src/PHPMailer.php';
+    // Получение данных
+    $json = file_get_contents('php://input'); // Получение json строки
+    $data = json_decode($json, true); // Преобразование json
 
-    $mail = new PHPMailer(true);
+    // Данные
+    $name = $_POST['name'];
+    
+    $tel = $_POST['telephone'];
+    $msg = $_POST['comments'];    
+
+    // Контент письма
+    $title = 'Заявка с сайта'; // Название письма
+    $body = '<p>Имя: <strong>'.$_POST['name'].'</strong></p>'.
+            '<p>Компания: <strong>'.$_POST['company'].'</strong></p>'.
+            '<p>E-mail: <strong>'.$_POST['email'].'</strong></p>'.
+            '<p>Телефон: <strong>'.$_POST['telephone'].'</strong></p>'.
+            '<p>Город: <strong>'.$_POST['city'].'</strong></p>'.
+            '<p>Сообщение: <strong>'.$_POST['comments'].'</strong></p>';
+
+    // Настройки PHPMailer
+    $mail = new PHPMailer\PHPMailer\PHPMailer();
+
+    try {
+    $mail->isSMTP();
     $mail->CharSet = 'UTF-8';
-    $mail->setLanguage('ru', 'phpmailer/language/');
-    $mail->IsHTML(true);
+    $mail->SMTPAuth   = true;
+    $mail->setLanguage('ru', 'PHPMailer/language');
 
-    //От кого письмо
-    $mail->setForm('info@promplast.ru', 'ПромПласт');
-    //Кому отправить
-    $mail->addAddress('zemlemerova.as@gmail.com');
-    //Тема письма
-    $mail->Subject = 'Заявка с сайта';
+    // Настройки почты отправителя
+    $mail->Host       = 'smtp.yandex.com'; // SMTP сервера вашей почты
+    $mail->Username   = 'promplast-ekb@yandex.ru'; // Логин на почте
+    $mail->Password   = 'kybbkblpktinhwlg'; // Пароль на почте
+    $mail->SMTPSecure = 'ssl';
+    $mail->Port       = 465;
 
-    //Тело письма
-    $body = '<h1>Заявка с сайта</h1>';
+    $mail->setFrom('promplast-ekb@yandex.ru', 'Заявка с сайта'); // Адрес самой почты и имя отправителя
 
-    if(trim(!empty($_POST['name']))){
-        $body.='<p><strong>Имя:</strong> '.$_POST['name'].'</p>';
-    }
-    if(trim(!empty($_POST['company']))){
-        $body.='<p><strong>Компания:</strong> '.$_POST['company'].'</p>';
-    }
-    if(trim(!empty($_POST['email']))){
-        $body.='<p><strong>E-mail:</strong> '.$_POST['email'].'</p>';
-    }
-    if(trim(!empty($_POST['telephone']))){
-        $body.='<p><strong>Телефон:</strong> '.$_POST['telephone'].'</p>';
-    }
-    if(trim(!empty($_POST['city']))){
-        $body.='<p><strong>Город:</strong> '.$_POST['city'].'</p>';
-    }
-    if(trim(!empty($_POST['comments']))){
-        $body.='<p><strong>Город:</strong> '.$_POST['comments'].'</p>';
-    }
+    // Получатель письма
+    $mail->addAddress('promplast-ekb@yandex.ru');
 
-    //Отправляем
+    // Отправка сообщения
+    $mail->isHTML(true);
+    $mail->Subject = $title;
+    $mail->Body = $body;
+
+    $mail->send('d');
+
+    // Сообщение об успешной отправке
     if (!$mail->send()) {
         $message = 'Ошибка';
     } else {
         $message = 'Данные отправлены';
     }
 
+    } catch (Exception $e) {
+    header('HTTP/1.1 400 Bad Request');
+    echo('Сообщение не было отправлено! Причина ошибки: {$mail->ErrorInfo}');
+    }
+    
     $response = ['message' => $message];
 
     header('Content-type: application/json');
