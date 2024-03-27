@@ -35,7 +35,6 @@
     // Настройки почты отправителя
     $mail->Host       = 'smtp.yandex.com'; // SMTP сервера вашей почты
     $mail->Username   = 'promplast-ekb@yandex.ru'; // Логин на почте
-    $mail->Password   = 'kybbkblpktinhwlg'; // Пароль на почте
     $mail->SMTPSecure = 'ssl';
     $mail->Port       = 465;
 
